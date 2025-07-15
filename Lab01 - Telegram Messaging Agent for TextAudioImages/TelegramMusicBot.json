@@ -1,0 +1,889 @@
+{
+  "name": "TelegramMusicBot",
+  "nodes": [
+    {
+      "parameters": {
+        "chatId": "={{ $json.id }}",
+        "text": "=Unable to process your message.",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "b4fd5c69-0be6-4ef3-9810-6346f620abec",
+      "name": "Error message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1600,
+        820
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "400c0160-247d-44d9-bbf3-43ac9039f585",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Receive Telegram Message with Webhook",
+        "height": 652,
+        "width": 929
+      },
+      "id": "5ed827a2-b1d3-4d6c-a9b1-eb2ddc915889",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        900,
+        360
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "musicinfo",
+        "options": {
+          "binaryPropertyName": "data"
+        }
+      },
+      "id": "b1e59aad-9a71-4d5a-917f-ac33795c4e76",
+      "name": "Listen for Telegram Events",
+      "type": "n8n-nodes-base.webhook",
+      "position": [
+        960,
+        540
+      ],
+      "webhookId": "b4ed4c80-a655-4ff2-87d6-febd5280d343",
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "content": "# Process Audio",
+        "height": 429,
+        "width": 1113,
+        "color": 4
+      },
+      "id": "b98625ee-07ca-4434-8bff-b95c2c3a297f",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1860,
+        360
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "17989eb0-feca-4631-b5c8-34b1d4a6c72b",
+              "name": "image_file_id",
+              "type": "string",
+              "value": "={{ $json.body.message.photo.last().file_id }}"
+            },
+            {
+              "id": "9317d7ae-dffd-4b1f-9a9c-b3cc4f1e0dd3",
+              "name": "caption",
+              "type": "string",
+              "value": "={{ $json.body.message.caption }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "071c49ce-3844-4ec0-b8bd-60bc3f149f11",
+      "name": "Image Schema",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        1940,
+        1440
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "content": "# Process Image",
+        "height": 432,
+        "width": 1289,
+        "color": 6
+      },
+      "id": "85bacc46-199a-4d36-bbcc-d3dc2efa2201",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1860,
+        1280
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "662ec3b6-11f6-4c79-8bab-feb3dfadb113",
+      "name": "gpt-4o-mini",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2360,
+        640
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.body.message.voice.file_id }}"
+      },
+      "id": "1ae8f8ab-dfac-4119-939e-7ee229f71a7c",
+      "name": "Get Audio File",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1940,
+        480
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "bfb08892-5622-4931-9ee6-797c3bbe9096",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.image_file_id }}"
+      },
+      "id": "c04b55a1-1a8d-4179-9a6e-3fbe571f2cd3",
+      "name": "Get Image",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2140,
+        1440
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "4dc3b0ef-c6f7-4d0a-8317-dbc03ae95507",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini",
+          "cachedResultName": "GPT-4O-MINI"
+        },
+        "text": "Analise a imagem e me explique do que se trata?",
+        "inputType": "base64",
+        "options": {}
+      },
+      "id": "e6c4525d-04c4-419e-8757-8b65831da14b",
+      "name": "Analyze Image",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2740,
+        1440
+      ],
+      "typeVersion": 1.6,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "audio",
+        "operation": "transcribe",
+        "binaryPropertyName": "=data",
+        "options": {}
+      },
+      "id": "1c7cb39a-bff7-4a2d-9678-fced5015040e",
+      "name": "Transcribe Recording",
+      "type": "@n8n/n8n-nodes-langchain.openAi",
+      "position": [
+        2140,
+        480
+      ],
+      "typeVersion": 1.6,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "# Process Text",
+        "height": 429,
+        "width": 1113,
+        "color": 5
+      },
+      "id": "85fea0d6-5048-4332-aa98-b48d8d0fad0b",
+      "name": "Sticky Note6",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1860,
+        820
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "5416cd72-6a00-48cd-804c-06bc9d314219",
+      "name": "gpt-4o-mini1",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "position": [
+        2360,
+        1100
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b37b48ba-8fef-4e6c-bbca-73e6c2e1e0a8",
+              "name": "text",
+              "type": "string",
+              "value": "={{ $json.body.message.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "759fc29e-a7e4-4e99-84cb-6ea4a5b6744f",
+      "name": "Edit Fields",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        2140,
+        940
+      ],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for Telegram Events').item.json.body.message.chat.id }}",
+        "text": "=Task message: <i>{{ $json.text }}</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "25c4ed13-f2ca-45a4-a8a5-254a67320349",
+      "name": "Audio Task Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2740,
+        420
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "61563e64-a0fd-40a0-addb-af0aca7973f4",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for Telegram Events').item.json.body.message.chat.id }}",
+        "text": "=Audio Message Class Other: <i>{{ $json.text }}</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "7b597872-c4ae-4b26-b6fc-6dde65abe727",
+      "name": "Audio Other Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2740,
+        600
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "5757df55-27f1-4764-8cef-8b7935d1de83",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for Telegram Events').item.json.body.message.chat.id }}",
+        "text": "=Task message: <i>{{ $json.text }}</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "f041bf42-f2e2-4f32-a093-31458fa9e5cd",
+      "name": "Text Task Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2740,
+        880
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "d2dc621c-50c1-40be-9e53-145f133b8390",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for Telegram Events').item.json.body.message.chat.id }}",
+        "text": "=Text message class Other: <i>{{ $json.text }}</i>",
+        "additionalFields": {
+          "appendAttribution": false,
+          "parse_mode": "HTML"
+        }
+      },
+      "id": "5f6d8ea2-ae76-4d10-9567-7f89af706a84",
+      "name": "Text Other Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2740,
+        1060
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "451b45bb-a4e5-429c-8633-d87232985e9b",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Listen for Telegram Events').item.json.body.message.chat.id }}",
+        "text": "={{ $json.content }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "5bcc089a-02f9-4fc2-ac47-9cf404cf48be",
+      "name": "Image Message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        2940,
+        1440
+      ],
+      "typeVersion": 1.2,
+      "webhookId": "bf8161b9-5355-49e3-b3b2-3936a968a15d",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "toBinary",
+        "sourceProperty": "data",
+        "options": {
+          "fileName": "={{ $json.result.file_path }}"
+        }
+      },
+      "id": "9fadc2e4-e805-4443-8632-5137339c578e",
+      "name": "Convert to Image File",
+      "type": "n8n-nodes-base.convertToFile",
+      "position": [
+        2540,
+        1440
+      ],
+      "typeVersion": 1.1
+    },
+    {
+      "parameters": {
+        "operation": "binaryToPropery",
+        "options": {}
+      },
+      "id": "24951175-6c70-4631-a8ab-0af482654b86",
+      "name": "Extract from File to Base64",
+      "type": "n8n-nodes-base.extractFromFile",
+      "position": [
+        2340,
+        1440
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "task",
+              "description": "If the message is about about creating a task/todo"
+            },
+            {
+              "category": "other",
+              "description": "If the message is not about creating a task/todo "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "97976380-d412-49f3-aad6-c7a1afdc90b4",
+      "name": "Text Classifier Audio",
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "position": [
+        2340,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "inputText": "={{ $json.text }}",
+        "categories": {
+          "categories": [
+            {
+              "category": "task",
+              "description": "If the message is about about creating a task/todo"
+            },
+            {
+              "category": "other",
+              "description": "If the message is not about creating a task/todo "
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fca2704b-a6d2-4a5c-b426-15c2b62a27b0",
+      "name": "Text Classifier",
+      "type": "@n8n/n8n-nodes-langchain.textClassifier",
+      "position": [
+        2340,
+        940
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "content": "## Validate Telegram User\n",
+        "height": 260,
+        "width": 420,
+        "color": 7
+      },
+      "id": "b5609126-d2a9-4f57-a330-9b3fd0145868",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1120,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.body.message.voice }}",
+                    "rightValue": "",
+                    "id": "d1790822-e5c1-4099-93d0-584ed75d303e"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "audio"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "conditions": [
+                  {
+                    "id": "342f0883-d959-44a2-b80d-379e39c76218",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.body.message.text }}",
+                    "rightValue": ""
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "text"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "version": 2,
+                  "leftValue": "",
+                  "caseSensitive": true,
+                  "typeValidation": "strict"
+                },
+                "combinator": "and",
+                "conditions": [
+                  {
+                    "id": "ded3a600-f861-413a-8892-3fc5ea935ecb",
+                    "operator": {
+                      "type": "array",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "leftValue": "={{ $json.body.message.photo }}",
+                    "rightValue": ""
+                  }
+                ]
+              },
+              "renameOutput": true,
+              "outputKey": "image"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "id": "ed479024-94e7-4f92-8188-3616b8180f2c",
+      "name": "Message Router",
+      "type": "n8n-nodes-base.switch",
+      "position": [
+        1600,
+        540
+      ],
+      "typeVersion": 3.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "772c23a2-d4f3-4f1b-a304-5d675eb526e2",
+              "leftValue": "={{ $json.body.message.text !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "37741699-10d6-4aa7-bd0d-849af41ce5fc",
+              "leftValue": "={{ $json.body.message.voice !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "e322248f-0a52-4397-8e0e-d0dfa9ce1ef0",
+              "leftValue": "={{ $json.body.message.audio !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "cf9f987d-03eb-4173-afb4-613c855d15ed",
+              "leftValue": "={{ $json.body.message.photo !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1260,
+        540
+      ],
+      "id": "4c559df3-efe5-45cd-ae52-9813b64194a5",
+      "name": "Validar Conteúdo da Mensagem"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Get Image": {
+      "main": [
+        [
+          {
+            "node": "Extract from File to Base64",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier Audio",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Schema": {
+      "main": [
+        [
+          {
+            "node": "Get Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "gpt-4o-mini1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Text Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Image": {
+      "main": [
+        [
+          {
+            "node": "Image Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Audio File": {
+      "main": [
+        [
+          {
+            "node": "Transcribe Recording",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message Router": {
+      "main": [
+        [
+          {
+            "node": "Get Audio File",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Image Schema",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier": {
+      "main": [
+        [
+          {
+            "node": "Text Task Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Text Other Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcribe Recording": {
+      "main": [
+        [
+          {
+            "node": "Text Classifier Audio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to Image File": {
+      "main": [
+        [
+          {
+            "node": "Analyze Image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Text Classifier Audio": {
+      "main": [
+        [
+          {
+            "node": "Audio Task Message",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Audio Other Message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Listen for Telegram Events": {
+      "main": [
+        [
+          {
+            "node": "Validar Conteúdo da Mensagem",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File to Base64": {
+      "main": [
+        [
+          {
+            "node": "Convert to Image File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Conteúdo da Mensagem": {
+      "main": [
+        [
+          {
+            "node": "Message Router",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a0e81cc7-5098-4339-9d8d-c52bbf7fe902",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c2293412e17075d36bf15cea7a2a85d13a202d54148a4ec12b8178d6e5a6979"
+  },
+  "id": "R0bPfKlDi7n0sbsK",
+  "tags": []
+}
