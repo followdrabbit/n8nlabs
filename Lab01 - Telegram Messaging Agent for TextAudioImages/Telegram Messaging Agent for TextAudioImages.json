@@ -1,5 +1,5 @@
 {
-  "name": "TelegramMusicBot",
+  "name": "Telegram Messaging Agent for TextAudioImages",
   "nodes": [
     {
       "parameters": {
@@ -879,7 +879,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "a0e81cc7-5098-4339-9d8d-c52bbf7fe902",
+  "versionId": "5e155251-4120-4a4f-8f0b-b8392edcf4f1",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7c2293412e17075d36bf15cea7a2a85d13a202d54148a4ec12b8178d6e5a6979"
