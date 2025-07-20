@@ -1,68 +1,74 @@
-# 🎵 LiryAnaBot – Telegram AI Music Assistant via n8n
+# 🎶 LyricMindBot – Telegram Bot para Análise de Letras com IA via n8n
 
 ![LyricMind Bot em ação](./lyricmind-demo.gif)
 
-Este projeto é um fluxo do **n8n** que conecta um bot no **Telegram** a uma automação de inteligência artificial capaz de receber mensagens com **nomes de músicas**, **cantores** ou **links**, e retornar:
-
-* A **letra original** da música (em qualquer idioma)
-* A **tradução**
-* Uma **interpretação textual** da letra com apoio de IA
+Este projeto conecta o Telegram ao **n8n** com automações baseadas em **IA** para **análise de letras de músicas**.  
+Ao enviar um **comando + link da letra da música**, o bot retorna traduções, interpretações, vocabulário e análises poéticas com base na letra fornecida.
 
 ---
 
-## ⚙️ Componentes Principais
+## ⚙️ Funcionalidades
 
-### 📲 Recepção e Validação de Mensagens
+- 📥 Recebe comandos via Telegram
+- 🌐 Extrai e limpa o conteúdo de uma URL com letra de música
+- 🔤 Processa o texto usando **modelos da OpenAI (GPT-4 Turbo)**
+- 📄 Gera diferentes tipos de análise textual para a letra
 
-* Webhook ativo em `https://n8n.parus.seg.br/webhook-test/musicinfo`
-* Aceita mensagens de **texto**, **áudio (voz)** e **imagem**
-* Validação do remetente antes de processar mensagens
+---
 
-### 🧠 Processamento com IA
+## 💬 Comandos Suportados
 
-* 🎤 **Mensagens de voz** são transcritas com o modelo **Whisper** (via OpenAI)
-* 🖼️ **Imagens** são analisadas via **GPT-4o Vision**
-* 💬 **Textos** são classificados e interpretados com **GPT-4 Turbo**
+| Comando                   | Descrição                                                                 |
+|--------------------------|---------------------------------------------------------------------------|
+| `/start`                 | Envia uma mensagem de boas-vindas com instruções                          |
+| `/get_lyrics`            | Retorna a **letra original + tradução linha a linha**                     |
+| `/interpret_lyrics`      | Fornece uma **interpretação emocional e simbólica** da letra              |
+| `/study_lyrics`          | Destaca **gírias, expressões idiomáticas e figuras de linguagem**         |
+| `/summarize_lyrics`      | Gera um **resumo conciso** da música em até 5 frases                     |
+| `/vocabulary_lyrics`     | Lista **palavras relevantes** com significado e tradução                  |
+| `/lyrics_poetic_analysis`| Apresenta uma **análise poética e literária** da letra                    |
 
-### 🧪 Roteamento por Tipo de Conteúdo
+---
 
-O fluxo utiliza um nó `Switch` chamado **Message Router** que divide as mensagens recebidas conforme o tipo:
+## 🧠 Como Funciona
 
-* `"text"` → nome de música, cantor ou link
-* `"voice"` → transcrição e interpretação
-* `"photo"` → interpretação visual
+1. O usuário envia um dos comandos com a URL de uma música (ex: `/get_lyrics https://www.letras.mus.br/...`)
+2. O n8n faz o download da página e extrai o texto limpo
+3. O texto é enviado para a OpenAI com instruções específicas por comando
+4. O bot retorna a resposta diretamente no Telegram
 
 ---
 
 ## 🔐 Credenciais Necessárias
 
-> Ao importar este projeto no seu ambiente n8n, você deverá configurar manualmente as credenciais:
+> Após importar o workflow no seu ambiente n8n, configure as credenciais:
 
 ### 1. **Telegram API**
 
-* Criar via: `Credenciais → Telegram API`
-* Inserir o token fornecido pelo [BotFather](https://t.me/BotFather)
+- Criar via: `Credenciais → Telegram API`
+- Inserir o token fornecido pelo [BotFather](https://t.me/BotFather)
 
 ### 2. **OpenAI API**
 
-* Criar via: `Credenciais → OpenAI`
-* Inserir sua `API Key` válida (modelos usados: `gpt-4`, `gpt-4-vision-preview`, `whisper-1`)
+- Criar via: `Credenciais → OpenAI`
+- Inserir sua `API Key` válida (modelo usado: `gpt-4`)
 
 ---
 
-## 📌 Observações e Créditos
+## 📌 Observações
 
-* Este projeto foi baseado no workflow oficial da comunidade n8n:
-  🔗 [Telegram Messaging Agent for Text/Audio/Images](https://n8n.io/workflows/2751-telegram-messaging-agent-for-textaudioimages/),
-  criado por **Joseph LePage** ([n8n.io][1], [n8n.io][2])
-* Todas as melhorias feitas por **Raphael de Carvalho Florencio**, personalizando para letras, tradução e interpretação musical
-* O projeto não armazena arquivos ou transcrições após o uso
-* Pode ser adaptado para ambientes de produção alterando apenas a URL do webhook
-* Testado com `n8n v1.100.1 (Self-hosted)`
+- O webhook configurado no projeto é:  
+  `https://<seu-servidor>/webhook/MusicAiBot`
+- O projeto **não armazena nenhuma informação** após o uso
+- Comandos malformados ou não reconhecidos recebem mensagens de erro amigáveis
+- Testado com `n8n v1.100.1 (Self-hosted)`
 
 ---
 
 ## 👨‍💻 Desenvolvedor
 
-> Desenvolvido por Raphael de Carvalho Florencio – [@rapha\_dunha](https://t.me/rapha_dunha)
+> Desenvolvido por **Raphael de Carvalho Florencio**  
+> Telegram: [@rapha_dunha](https://t.me/rapha_dunha)  
 > Foco em soluções com IA + Automação com n8n
+
+---

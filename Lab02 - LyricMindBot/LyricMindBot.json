@@ -49,7 +49,7 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
       "position": [
-        -860,
+        -1160,
         420
       ],
       "id": "f99a5831-30a6-4c44-82e2-d02b51e3fb86",
@@ -84,14 +84,14 @@
       "parameters": {
         "content": "## Download, Translate and Transform (ETL)",
         "height": 260,
-        "width": 491,
+        "width": 731,
         "color": 4
       },
       "id": "12fdd9e1-674a-4a24-b6e9-86c94c8bcd94",
       "name": "Sticky Note3",
       "type": "n8n-nodes-base.stickyNote",
       "position": [
-        -40,
+        -300,
         480
       ],
       "typeVersion": 1
@@ -103,7 +103,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        320,
+        280,
         580
       ],
       "id": "20885d7f-b2cb-4dcf-be2e-2b153fa48c68",
@@ -117,7 +117,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        160,
+        120,
         580
       ],
       "id": "87df654e-5dd3-457f-aa8c-87cf18af42b7",
@@ -146,7 +146,7 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        0,
+        -260,
         580
       ],
       "id": "ff3d5b7d-5e2e-4d78-87a5-6c8243938802",
@@ -176,7 +176,7 @@
       "name": "Settings",
       "type": "n8n-nodes-base.set",
       "position": [
-        -420,
+        -720,
         420
       ],
       "typeVersion": 2
@@ -209,7 +209,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -660,
+        -960,
         420
       ],
       "id": "d9cbb42d-a904-40f6-8077-cee1b85d8799",
@@ -243,7 +243,7 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
       "position": [
-        -240,
+        -540,
         420
       ],
       "id": "093b00da-4d1c-48f6-b8eb-f25032e132a7",
@@ -254,7 +254,7 @@
       "type": "n8n-nodes-base.noOp",
       "typeVersion": 1,
       "position": [
-        -420,
+        -720,
         580
       ],
       "id": "a2b9c288-afed-4ba4-bb72-fbd47c8bcae2",
@@ -313,7 +313,7 @@
         "prompt": {
           "messages": [
             {
-              "content": "={{ $('Settings').first().json.get_lyrics_prompt }}\n\n{{ $json.clean_text }}"
+              "content": "=> Você é um especialista em idiomas e tradução de letras musicais.\n> Sua função é analisar letras de músicas enviadas em qualquer idioma e apresentar o resultado com a seguinte estrutura:\n>\n> * Mantenha a letra da música no idioma original, linha por linha, respeitando a ordem e a formatação originais.\n> * Abaixo de cada linha, adicione a tradução correspondente para o idioma **\\[Português / ou outro idioma-alvo se necessário]**.\n> * Preserve expressões idiomáticas e figuras de linguagem sempre que possível, oferecendo uma tradução que mantenha o sentido e o tom original.\n> * **Não modifique** o conteúdo original, apenas traduza de forma contextualizada e fiel.\n>\n> Exemplo de formatação esperada:\n>\n> ```\n> Original line 1  \n> Tradução linha 1\n>\n> Original line 2  \n> Tradução linha 2\n> ```\n\n{{ $json.clean_text }}"
             }
           ]
         },
@@ -644,6 +644,79 @@
           "name": "OpenAi account"
         }
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0cd737c4-e0d4-4e39-b1e7-d0ebf3d616db",
+              "leftValue": "={{ $json.url }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        580
+      ],
+      "id": "181fef1e-c31a-4893-aad4-c0c399308df9",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "content": "## Error - Incomplete or Invalid Command",
+        "height": 311,
+        "width": 256
+      },
+      "id": "d2f036d7-f864-4d18-9fdb-9fc5c02754a3",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        60,
+        840
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.chat_id }}",
+        "text": "=⚠️ O comando está incompleto ou incorreto\\.\n\nVerifique se você escreveu o comando corretamente e incluiu a URL da letra da música\\.\n\nExemplo de uso correto:  \n\\/get\\_lyrics https:\\/\\/www\\.letras\\.mus\\.br\\/lana\\-del\\-rey\\/summertime\\-sadness\\/\n\nSe tiver dúvidas, digite:  \n\\/start  \npara ver todos os comandos disponíveis e como usá\\-los\\.",
+        "additionalFields": {
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "id": "f5eaa508-bb2b-4da4-9a70-4cbc42982b30",
+      "name": "Incomplete_Command",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        140,
+        960
+      ],
+      "typeVersion": 1,
+      "webhookId": "b697b8f4-63c4-4ee9-b6ec-76e76f3110ee",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -685,7 +758,7 @@
       "main": [
         [
           {
-            "node": "Download_URL",
+            "node": "If1",
             "type": "main",
             "index": 0
           }
@@ -868,13 +941,31 @@
           }
         ]
       ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Download_URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Incomplete_Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "20088af4-c51c-44ad-92f4-a92972828e19",
+  "versionId": "a5ad099a-5ea4-4296-9ba7-47f17662f54d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7c2293412e17075d36bf15cea7a2a85d13a202d54148a4ec12b8178d6e5a6979"
