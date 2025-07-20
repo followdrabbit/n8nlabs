@@ -1,0 +1,884 @@
+{
+  "name": "LyricMindBot",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "## Fallback for unsupported commands",
+        "height": 311,
+        "width": 236
+      },
+      "id": "99154abe-6b5b-4497-ac8f-7f73af04701c",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        820,
+        1480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.chat_id }}",
+        "text": "=⚠️ Opa\\! Esse comando ainda não é suportado\\.\n\nPara ver a lista completa de comandos disponíveis, digite\\:\n\\/start\n\nOu envie um dos comandos válidos seguidos da URL da letra da música\\.\n\nExemplo\\:\n\\/get\\_lyrics https:\\/\\/www\\.letras\\.mus\\.br\\/lana\\-del\\-rey\\/summertime\\-sadness\\/\n",
+        "additionalFields": {
+          "parse_mode": "MarkdownV2"
+        }
+      },
+      "id": "c77b6cf3-07fd-4878-8eb3-2a3c7e5709cd",
+      "name": "Send error message",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        880,
+        1620
+      ],
+      "typeVersion": 1,
+      "webhookId": "b697b8f4-63c4-4ee9-b6ec-76e76f3110ee",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "MusicAiBot",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -860,
+        420
+      ],
+      "id": "f99a5831-30a6-4c44-82e2-d02b51e3fb86",
+      "name": "Webhook que recebe as mensagens",
+      "webhookId": "0b53cbd6-3316-4450-ae39-048e7b7d242e"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Settings').first().json.chat_id }}",
+        "text": "={{ $json.message.content }}",
+        "additionalFields": {
+          "parse_mode": "Markdown"
+        }
+      },
+      "id": "f1b6491d-bf09-488e-ba14-989fbf7fb40a",
+      "name": "Text reply",
+      "type": "n8n-nodes-base.telegram",
+      "position": [
+        1260,
+        580
+      ],
+      "typeVersion": 1,
+      "webhookId": "e7be2f8b-b831-4046-a684-cb87253d6ee5",
+      "credentials": {
+        "telegramApi": {
+          "id": "9NPgs3ST2icwz3DS",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Download, Translate and Transform (ETL)",
+        "height": 260,
+        "width": 491,
+        "color": 4
+      },
+      "id": "12fdd9e1-674a-4a24-b6e9-86c94c8bcd94",
+      "name": "Sticky Note3",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -40,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "// HTML bruto da página\nconst html = $input.item.json.data;\n\n// Limpa comentários, scripts e estilos\nlet clean = html\n  .replace(/<!--[\\s\\S]*?-->/g, '')                        // Remove comentários\n  .replace(/<script[\\s\\S]*?<\\/script>/gi, '')             // Remove <script>\n  .replace(/<style[\\s\\S]*?<\\/style>/gi, '')               // Remove <style>\n  .replace(/<\\/?(head|meta|link|iframe|noscript)[^>]*>/gi, '') // Remove head/meta/etc\n  .replace(/<[^>]+>/g, '')                                // Remove todas as tags HTML\n  .replace(/\\s{2,}/g, ' ')                                // Reduz múltiplos espaços\n  .replace(/\\n{2,}/g, '\\n')                               // Reduz múltiplas quebras\n  .trim();\n\n// Opcional: manter quebras de linha coerentes\nclean = clean.replace(/\\r\\n|\\r/g, '\\n');\n\nreturn [\n  {\n    json: {\n      clean_text: clean,\n      preview: clean.slice(0, 300) + '...',\n      length: clean.length\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        320,
+        580
+      ],
+      "id": "20885d7f-b2cb-4dcf-be2e-2b153fa48c68",
+      "name": "CleanUp"
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.url }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        160,
+        580
+      ],
+      "id": "87df654e-5dd3-457f-aa8c-87cf18af42b7",
+      "name": "Download_URL"
+    },
+    {
+      "parameters": {
+        "content": "## Send Message",
+        "height": 260,
+        "width": 251,
+        "color": 4
+      },
+      "id": "970e6177-4709-453d-972e-62787c53eaf8",
+      "name": "Sticky Note4",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        1200,
+        480
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "jsCode": "const message = $json.body.message.text;\nconst parts = message.split(\" \");\nconst url = parts[1];\n\nreturn [\n  {\n    json: {\n      url: url\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        0,
+        580
+      ],
+      "id": "ff3d5b7d-5e2e-4d78-87a5-6c8243938802",
+      "name": "Extract_URL"
+    },
+    {
+      "parameters": {
+        "values": {
+          "number": [
+            {
+              "name": "model_temperature",
+              "value": 0.8
+            },
+            {
+              "name": "token_length",
+              "value": "=4096"
+            },
+            {
+              "name": "chat_id",
+              "value": "={{ $json.body.message.chat.id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "24598187-434e-4756-873d-c8bed96b39ed",
+      "name": "Settings",
+      "type": "n8n-nodes-base.set",
+      "position": [
+        -420,
+        420
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "fb710608-960b-4b73-9f83-b512a85e5c4f",
+              "leftValue": "={{ $json.body.message.text !== undefined }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -660,
+        420
+      ],
+      "id": "d9cbb42d-a904-40f6-8077-cee1b85d8799",
+      "name": "Message_Filter"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "0cd737c4-e0d4-4e39-b1e7-d0ebf3d616db",
+              "leftValue": "={{ $json.body.message.text }}",
+              "rightValue": "/start",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -240,
+        420
+      ],
+      "id": "093b00da-4d1c-48f6-b8eb-f25032e132a7",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -420,
+        580
+      ],
+      "id": "a2b9c288-afed-4ba4-bb72-fbd47c8bcae2",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "content": "## AI Interaction",
+        "height": 1380,
+        "width": 231,
+        "color": 4
+      },
+      "id": "40d2d7ec-56df-489e-a2c9-83cffa6ebc3d",
+      "name": "Sticky Note5",
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        820,
+        60
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Este é o primeiro contato do usuário `{{ $json.body.message.from.first_name }}`.  Gere uma mensagem de boas-vindas amigável e curta, no idioma `{{ $json.body.message.from.language_code }}`, explicando que este é o *Lyrics Assistant Bot*, com foco em análise de letras de músicas.  Inclua a mensagem abaixo no mesmo idioma, formatada em **Markdown V2** para renderizar corretamente no Telegram:  👋 Olá\\\\! {{ $json.body.message.from.first_name }} Seja bem\\-vindo ao *Lyrics Assistant Bot* 🎶  Com este bot você pode **analisar letras de músicas** de forma completa, seja para entender melhor a mensagem, estudar um idioma ou apenas se emocionar com as palavras\\\\.    *️⃣ *Como usar*:  Basta enviar um dos comandos abaixo seguido da **URL da letra da música** \\(em qualquer idioma\\)\\:  *Exemplo:*   \\- \\`\\/get_lyrics https:\\/\\/www\\.letras\\.mus\\.br\\/lana\\-del\\-rey\\/summertime\\-sadness\\/\\`   \\- \\`\\/interpret_lyrics https:\\/\\/genius\\.com\\/Eminem\\-lose\\-yourself\\-lyrics\\`  🧠 *Comandos disponíveis*: \\- \\`\\/start\\`: Exibe a Saudação e orientações de uso com exemplos de comandos. \\- \\`\\/get_lyrics\\`: Retorna a letra completa da música com tradução em PT-BR, se estiver em outro idioma.   \\- \\`\\/interpret_lyrics\\`: Fornece uma interpretação emocional e simbólica da música.   \\- \\`\\/study_lyrics\\`: Retorna um estudo linguístico com gírias, expressões idiomáticas e figuras de linguagem.   \\- \\`\\/summarize_lyrics\\`: Gera um resumo curto da letra da música. \\- \\`\\/vocabulary_lyrics\\`: Lista palavras difíceis ou relevantes com explicações simples.  \\- \\`\\/lyrics_poetic_analysis\\`: Analisa os recursos poéticos e literários da letra, como rimas, metáforas e aliterações.   🎧 Use músicas para aprender, sentir e crescer\\\\\\!"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "f0010ce7-6479-4daa-8a55-c7708a2b41a0",
+      "name": "/start",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        160
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "={{ $('Settings').first().json.get_lyrics_prompt }}\n\n{{ $json.clean_text }}"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "95f0f3e3-c50c-42ce-a14d-ba6c14b50a98",
+      "name": "/get_lyrics",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        340
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Você é um especialista em análise literária, semiótica e interpretação de letras de músicas. Receberá abaixo a letra completa de uma música (pode estar em qualquer idioma). Sua tarefa é:\n\n1. Apresentar uma **interpretação emocional e simbólica** da música, explicando:\n   - Quais sentimentos ela transmite?\n   - Qual a possível **mensagem central** da letra?\n   - Existe uma **história implícita** sendo contada?\n   - Quais eventos, metáforas ou símbolos são importantes para a interpretação?\n\n2. Caso a letra esteja em outro idioma, **considere a tradução para PT-BR** ao interpretar.\n\n3. Mantenha um tom **profundo, reflexivo e acessível**, como um crítico musical que conversa com o público geral.\n\n### Letra da música:\n{{ $json.clean_text }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "f503c841-88c4-4043-b5c4-6791087fb60e",
+      "name": "/interpret_lyrics",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        520
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Você é um especialista em linguística aplicada ao ensino de idiomas e análise de letras de músicas. Receberá abaixo a letra de uma música (em qualquer idioma). Sua tarefa é ajudar um estudante de idiomas a aprender com essa música, explicando os elementos linguísticos relevantes.\n\n1. **Identifique e explique gírias, expressões idiomáticas e figuras de linguagem** encontradas na letra. Para cada item, forneça:\n   - A **frase original**\n   - Uma **tradução literal** (se aplicável)\n   - Uma **explicação do significado** ou uso cultural\n\n2. Destaque **expressões úteis para estudantes de idioma**, mesmo que não sejam gírias.\n\n3. Caso a letra esteja em outro idioma, forneça os exemplos com tradução para **PT-BR** e mantenha a explicação nesse idioma.\n\n4. Organize a resposta em tópicos numerados ou uma tabela, para facilitar a leitura e o estudo.\n\n### Letra da música:\n{{ $json.clean_text }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "c03575bb-ac07-4fb0-9838-ea60b32d226f",
+      "name": "/study_lyrics",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        700
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Você é um especialista em análise musical e linguagem. Receberá a letra completa de uma música e deve produzir um **resumo conciso**, destacando a ideia central e os principais temas abordados.\n\n1. Resuma o **conteúdo da letra** de forma clara, objetiva e com no máximo **5 frases curtas**.\n2. Evite repetir a letra; use **suas próprias palavras** para transmitir a mensagem.\n3. Se a música contar uma história, indique os **principais eventos ou sentimentos envolvidos**.\n4. Caso a letra esteja em outro idioma, considere a tradução para PT-BR ao elaborar o resumo.\n\n### Letra da música:\n{{ $json.clean_text }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "b8ea447b-12b0-406f-a55c-1f2a29992a38",
+      "name": "/summarize_lyrics",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        880
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "c303e78e-8d8e-4fbb-8827-f5601fb17876",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/get_lyrics",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6a1368ea-dbe4-4dc5-9457-e39e0ebb9325",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/interpret_lyrics",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "6d4b8947-4396-487a-8f57-8eb0c94d085e",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/study_lyrics",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "58ca41e8-9a90-4229-84f0-257bc24afcee",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/summarize_lyrics",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "99d7d69f-0506-4acf-8480-4fc9f5f2ff65",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/vocabulary_lyrics",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "cedca88b-7397-400f-a316-b173003f1fa0",
+                    "leftValue": "={{ $('Settings').first().json.body.message.text }}",
+                    "rightValue": "/lyrics_poetic_analysis",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        520,
+        500
+      ],
+      "id": "7ed7fb35-727a-406d-9d72-605838c0486f",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Você é um especialista em ensino de idiomas e aquisição de vocabulário por meio de músicas. Receberá a letra completa de uma música (em qualquer idioma). Seu objetivo é ajudar um estudante brasileiro a aprender **novas palavras e expressões** com base nessa letra.\n\n1. Identifique e selecione de **5 a 15 palavras ou expressões relevantes**, com base nos seguintes critérios:\n   - Vocabulário de uso comum, mas **útil para estudantes**\n   - Palavras **desafiadoras** ou com **múltiplos significados**\n   - Expressões idiomáticas ou **verbos frasais** (se aplicável)\n\n2. Para cada item, forneça:\n   - A **palavra ou expressão original**\n   - A **tradução para o português (PT-BR)**\n   - Uma **definição clara e breve**\n   - (Opcional) Um **exemplo de uso simples**\n\n3. Caso a música esteja em inglês (ou outro idioma), escreva as definições e exemplos em **português**.\n\n4. Organize a resposta em formato de lista ou tabela, adequada para revisão e estudo.\n\n### Letra da música:\n{{ $json.clean_text }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "cd6f858c-e75b-410f-890b-09c644f9ab4c",
+      "name": "/vocabulary_lyrics",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        1080
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "prompt": {
+          "messages": [
+            {
+              "content": "=Você é um especialista em literatura, poesia e análise estilística de textos. Receberá a letra completa de uma música e deverá identificar os **recursos poéticos e literários** utilizados pelo(a) compositor(a).\n\n1. Analise a letra destacando:\n   - **Metáforas** e comparações\n   - **Rimas** (se presentes)\n   - **Aliterações**, **assonâncias** ou repetições sonoras\n   - **Paralelismos**, **anáforas**, **hipérboles**, **personificações** ou outras figuras de linguagem\n   - Uso de **ritmo**, **estrutura poética** ou repetições que contribuam para a estética do texto\n\n2. Para cada recurso encontrado, forneça:\n   - O **verso ou trecho** onde aparece\n   - O **nome do recurso** identificado\n   - Uma **breve explicação** do efeito literário ou simbólico causado\n\n3. Se a letra estiver em outro idioma, use a **tradução em PT-BR como base para análise** e mantenha a explicação em português.\n\n4. Apresente a análise de forma organizada e compreensível mesmo para quem não é especialista, com tom educativo.\n\n### Letra da música:\n{{ $json.clean_text }}\n"
+            }
+          ]
+        },
+        "options": {
+          "maxTokens": "={{ $('Settings').first().json.token_length }}",
+          "temperature": "={{ $('Settings').first().json.model_temperature }}"
+        },
+        "requestOptions": {}
+      },
+      "id": "d7aefb09-2548-421e-8cd9-923e1590c326",
+      "name": "/lyrics_poetic_analysis",
+      "type": "n8n-nodes-base.openAi",
+      "position": [
+        880,
+        1280
+      ],
+      "typeVersion": 1,
+      "credentials": {
+        "openAiApi": {
+          "id": "figR1LfvBMPkPsro",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook que recebe as mensagens": {
+      "main": [
+        [
+          {
+            "node": "Message_Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CleanUp": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Download_URL": {
+      "main": [
+        [
+          {
+            "node": "CleanUp",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract_URL": {
+      "main": [
+        [
+          {
+            "node": "Download_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Settings": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message_Filter": {
+      "main": [
+        [
+          {
+            "node": "Settings",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "/start",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Extract_URL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/start": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/get_lyrics": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/interpret_lyrics": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/study_lyrics": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/summarize_lyrics": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "/get_lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/interpret_lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/study_lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/summarize_lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/vocabulary_lyrics",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "/lyrics_poetic_analysis",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send error message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/vocabulary_lyrics": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "/lyrics_poetic_analysis": {
+      "main": [
+        [
+          {
+            "node": "Text reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "20088af4-c51c-44ad-92f4-a92972828e19",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7c2293412e17075d36bf15cea7a2a85d13a202d54148a4ec12b8178d6e5a6979"
+  },
+  "id": "KyKAJCDqGfOTjRGh",
+  "tags": []
+}
