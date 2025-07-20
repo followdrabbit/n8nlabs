@@ -1,5 +1,7 @@
 # 🎵 LiryAnaBot – Telegram AI Music Assistant via n8n
 
+![Bot em ação](./MultiModalBot-demo.gif)
+
 Este projeto é um fluxo do **n8n** que conecta um bot no **Telegram** a uma automação de inteligência artificial capaz de receber mensagens com **nomes de músicas**, **cantores** ou **links**, e retornar:
 
 * A **letra original** da música (em qualquer idioma)
