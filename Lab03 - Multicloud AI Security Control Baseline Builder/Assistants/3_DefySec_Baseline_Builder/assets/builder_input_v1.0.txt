@@ -1,0 +1,23 @@
+Title: Enforce S3 Object Ownership (Disable ACLs)
+Description: Set "Bucket owner enforced" on all relevant S3 buckets to disable ACLs and centralize access via IAM.
+Applicability: Amazon S3 bucket (resource-level)
+Security Risk: ACLs can cause unintended public access and ownership conflicts.
+Default Behavior / Limitations: ACLs may be enabled; change requires explicit configuration.
+Automation: Use AWS CLI or IaC; monitor with an AWS Config rule.
+References: https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html, https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html
+
+Title: Disable ACLs by Enforcing Object Ownership
+Description: Configure Object Ownership as "Bucket owner enforced" for all applicable S3 buckets to eliminate ACLs and rely on IAM.
+Applicability: Amazon S3 bucket (resource-level)
+Security Risk: Without owner-enforced mode, ACLs can reintroduce public or conflicting access paths.
+Default Behavior / Limitations: Requires explicit change on existing buckets; verify impact on legacy workflows.
+Automation: Apply via CloudFormation/Terraform and validate with an AWS Config custom rule.
+References: https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html
+
+Title: Require TLS for S3 (SecureTransport)
+Description: Enforce HTTPS-only access using a bucket policy condition "aws:SecureTransport": "true".
+Applicability: Amazon S3 bucket (resource-level)
+Security Risk: Without TLS, data in transit can be intercepted or modified.
+Default Behavior / Limitations: S3 supports HTTP/HTTPS; some legacy clients may attempt HTTP.
+Automation: Add bucket policy and monitor with AWS Config managed rule s3-bucket-ssl-requests-only.
+References: https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html, https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html

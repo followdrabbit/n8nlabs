@@ -1,0 +1,37 @@
+{
+  "ok": true,
+  "technology": "Amazon S3",
+  "meta": {
+    "input_blocks_parsed": 3,
+    "controls_after_consolidation": 2
+  },
+  "controls": [
+    {
+      "title": "Enforce S3 Object Ownership (Disable ACLs)",
+      "description": "Set \"Bucket owner enforced\" on all relevant S3 buckets to disable ACLs and centralize access via IAM.",
+      "applicability": "Amazon S3 bucket (resource-level)",
+      "security_risk": "ACLs can cause unintended public access and ownership conflicts.",
+      "default_behavior_limitations": "ACLs may be enabled; change requires explicit configuration.",
+      "automation": "Use AWS CLI or IaC; monitor with an AWS Config rule.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/about-object-ownership.html",
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html"
+      ],
+      "merged_from_titles": [
+        "Disable ACLs by Enforcing Object Ownership"
+      ]
+    },
+    {
+      "title": "Require TLS for S3 (SecureTransport)",
+      "description": "Enforce HTTPS-only access using a bucket policy condition \"aws:SecureTransport\": \"true\".",
+      "applicability": "Amazon S3 bucket (resource-level)",
+      "security_risk": "Without TLS, data in transit can be intercepted or modified.",
+      "default_behavior_limitations": "S3 supports HTTP/HTTPS; some legacy clients may attempt HTTP.",
+      "automation": "Add bucket policy and monitor with AWS Config managed rule s3-bucket-ssl-requests-only.",
+      "references": [
+        "https://docs.aws.amazon.com/AmazonS3/latest/userguide/security-best-practices.html",
+        "https://docs.aws.amazon.com/config/latest/developerguide/s3-bucket-ssl-requests-only.html"
+      ]
+    }
+  ]
+}

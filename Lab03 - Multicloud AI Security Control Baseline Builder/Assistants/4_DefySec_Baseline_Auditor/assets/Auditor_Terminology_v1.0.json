@@ -1,0 +1,104 @@
+{
+  "$id": "https://defysec.local/Auditor_Terminology.json",
+  "version": "2.0.0",
+  "providers": {
+    "aws": {
+      "service_examples": [
+        "Amazon S3",
+        "AWS IAM",
+        "AWS KMS",
+        "AWS CloudTrail",
+        "AWS Config"
+      ],
+      "terms": [
+        "IAM",
+        "SCP",
+        "AWS Config",
+        "CloudTrail",
+        "KMS",
+        "S3 Block Public Access",
+        "Bucket policy",
+        "Object Ownership: Bucket owner enforced",
+        "aws:SecureTransport"
+      ]
+    },
+    "azure": {
+      "service_examples": [
+        "Azure Storage",
+        "Azure Key Vault",
+        "Azure Monitor",
+        "Azure Policy"
+      ],
+      "terms": [
+        "Azure Policy",
+        "RBAC",
+        "Diagnostic settings",
+        "Storage account",
+        "Secure transfer required",
+        "AllowBlobPublicAccess"
+      ]
+    },
+    "gcp": {
+      "service_examples": [
+        "Google Cloud Storage",
+        "Cloud KMS",
+        "Cloud Audit Logs",
+        "Org Policy"
+      ],
+      "terms": [
+        "Org Policy",
+        "IAM Conditions",
+        "Cloud KMS",
+        "Cloud Audit Logs",
+        "Public Access Prevention",
+        "Uniform bucket-level access"
+      ]
+    }
+  },
+  "cross_provider_disallowed": [
+    {
+      "term": "Azure Policy",
+      "invalid_in": [
+        "aws",
+        "gcp"
+      ],
+      "suggest": "Use 'SCP' (AWS) or 'Org Policy' (GCP) as appropriate."
+    },
+    {
+      "term": "SCP",
+      "invalid_in": [
+        "azure",
+        "gcp"
+      ],
+      "suggest": "Use 'Azure Policy' (Azure) or 'Org Policy' (GCP)."
+    },
+    {
+      "term": "Org Policy",
+      "invalid_in": [
+        "aws",
+        "azure"
+      ],
+      "suggest": "Use 'SCP' (AWS) or 'Azure Policy' (Azure)."
+    },
+    {
+      "term": "RBAC",
+      "invalid_in": [
+        "aws"
+      ],
+      "suggest": "Use 'IAM' for AWS contexts."
+    },
+    {
+      "term": "IAM Conditions",
+      "invalid_in": [
+        "aws",
+        "azure"
+      ],
+      "suggest": "Use 'SCP' (AWS) or 'Azure Policy' (Azure) depending on context."
+    }
+  ],
+  "service_name_aliases": {
+    "S3": "Amazon S3",
+    "Azure Blob Storage": "Azure Storage",
+    "GCS": "Google Cloud Storage"
+  }
+}

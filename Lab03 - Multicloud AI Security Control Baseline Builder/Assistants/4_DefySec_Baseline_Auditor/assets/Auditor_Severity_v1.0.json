@@ -1,0 +1,28 @@
+{
+  "$id": "https://defysec.local/Auditor_Severity.json",
+  "version": "2.0.0",
+  "policy": {
+    "errors_block_good_enough": true,
+    "warnings_block_good_enough": true
+  },
+  "defaults": {
+    "error": [
+      "TECH.MAJORITY",
+      "TERM.PROVIDER_CORRECT",
+      "CTRL.TITLE",
+      "CTRL.DESCRIPTION_SINGLE_INTENT",
+      "CTRL.APPLICABILITY",
+      "CTRL.RISK",
+      "CTRL.AUTOMATION_TESTABLE",
+      "CTRL.REFERENCES_MIN_ONE",
+      "CONS.NO_CROSS_TECH",
+      "CONS.EQUIVALENCE"
+    ],
+    "warn": [
+      "CTRL.DEFAULTS_LIMITS",
+      "CTRL.REFERENCES_OFFICIAL_PREF",
+      "CONS.MERGED_TITLES_PRESENT"
+    ]
+  },
+  "overrides": {}
+}

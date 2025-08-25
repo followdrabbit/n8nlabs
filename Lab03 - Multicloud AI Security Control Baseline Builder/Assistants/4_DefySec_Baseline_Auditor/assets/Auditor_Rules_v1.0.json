@@ -1,0 +1,99 @@
+{
+  "$id": "https://defysec.local/Auditor_Rules.json",
+  "version": "2.0.0",
+  "focus": "CONTENT_ONLY",
+  "description": "Rules for content, consolidation, terminology, references, and clarity. Structural/schema checks are out of scope.",
+  "rules": [
+    {
+      "id": "TECH.MAJORITY",
+      "level_default": "error",
+      "applies_to": "$.technology",
+      "check": "Technology must match the majority service inferred from titles/applicability; tie -> 'Multiple Technologies'; none -> 'Unknown Technology'.",
+      "fix": "Adjust the `technology` value or revise controls so the majority is clear and consistent."
+    },
+    {
+      "id": "TERM.PROVIDER_CORRECT",
+      "level_default": "error",
+      "applies_to": "$.controls[*]",
+      "check": "Provider terminology must match the control's provider (AWS IAM/SCP/Config; Azure RBAC/Policy; GCP IAM/Org Policy).",
+      "fix": "Replace mixed terms with provider-native mechanisms."
+    },
+    {
+      "id": "CTRL.TITLE",
+      "level_default": "error",
+      "applies_to": "$.controls[*].title",
+      "check": "Title ≤120 chars, actionable, single intent.",
+      "fix": "Shorten and focus on one enforcement outcome."
+    },
+    {
+      "id": "CTRL.DESCRIPTION_SINGLE_INTENT",
+      "level_default": "error",
+      "applies_to": "$.controls[*].description",
+      "check": "Description expresses one intent with a clear enforcement result; no multi-action bundling.",
+      "fix": "Split into atomic controls or rewrite to one testable intent."
+    },
+    {
+      "id": "CTRL.APPLICABILITY",
+      "level_default": "error",
+      "applies_to": "$.controls[*].applicability",
+      "check": "Applicability names the service/technology AND enforcement locus/level (org/account/subscription/project/resource).",
+      "fix": "Include both technology (e.g., Amazon S3) and level (e.g., resource-level)."
+    },
+    {
+      "id": "CTRL.RISK",
+      "level_default": "error",
+      "applies_to": "$.controls[*].security_risk",
+      "check": "States consequence if the control is not applied (confidentiality/integrity/availability impact).",
+      "fix": "Describe a concrete adverse outcome."
+    },
+    {
+      "id": "CTRL.DEFAULTS_LIMITS",
+      "level_default": "warn",
+      "applies_to": "$.controls[*].default_behavior_limitations",
+      "check": "States platform defaults and notable constraints/exceptions.",
+      "fix": "Add relevant defaults and limitations."
+    },
+    {
+      "id": "CTRL.AUTOMATION_TESTABLE",
+      "level_default": "error",
+      "applies_to": "$.controls[*].automation",
+      "check": "Specifies testable enforcement/monitoring (policy/config/IaC), not vague advice.",
+      "fix": "Reference concrete mechanisms (AWS Config, Azure Policy, Org Policy, IaC checks)."
+    },
+    {
+      "id": "CTRL.REFERENCES_MIN_ONE",
+      "level_default": "error",
+      "applies_to": "$.controls[*].references",
+      "check": "At least one valid http(s) reference URL.",
+      "fix": "Add a provider doc URL; ensure URLs start with http(s)://."
+    },
+    {
+      "id": "CTRL.REFERENCES_OFFICIAL_PREF",
+      "level_default": "warn",
+      "applies_to": "$.controls[*].references",
+      "check": "Prefer official docs first when applicable (AWS, Azure, GCP).",
+      "fix": "Add or reorder so an official doc appears first."
+    },
+    {
+      "id": "CONS.NO_CROSS_TECH",
+      "level_default": "error",
+      "applies_to": "$.controls[*]",
+      "check": "No consolidation across different technologies.",
+      "fix": "Split per provider/service."
+    },
+    {
+      "id": "CONS.EQUIVALENCE",
+      "level_default": "error",
+      "applies_to": "$.controls[*]",
+      "check": "Equivalence requires same intent, enforcement locus/mechanism, scope, and mode/setting.",
+      "fix": "Merge true duplicates (and list merged_from_titles) or differentiate scope/mode."
+    },
+    {
+      "id": "CONS.MERGED_TITLES_PRESENT",
+      "level_default": "warn",
+      "applies_to": "$.controls[*].merged_from_titles",
+      "check": "If consolidated, list merged_from_titles; otherwise omit.",
+      "fix": "Populate merged_from_titles with originals merged into this control."
+    }
+  ]
+}
